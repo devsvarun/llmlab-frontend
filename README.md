@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# README — Frontend (Next.js LLM Lab)
 
-## Getting Started
+## LLMLab — Frontend
 
-First, run the development server:
+**Live URL:** [https://llmlab-frontend.vercel.app/](https://llmlab-frontend.vercel.app/)
+**Repo:** [https://github.com/devsvarun/llmlab-frontend](https://github.com/devsvarun/llmlab-frontend)
+
+### Overview
+
+This repository contains the Next.js frontend for LLM Lab — a visual dashboard to test LLM parameter settings (temperature, top_p), generate multiple responses, view programmatic quality metrics, compare outputs, import/export experiments, and demo model behavior.
+
+Tech stack:
+
+- Next.js (App Router)
+- React (client components)
+- Tailwind CSS + shadcn/ui
+- react-markdown / remark (markdown rendering)
+- TanStack Query (optional for data fetching)
+- Deployed on Vercel
+
+### Quickstart (Local)
+
+1. Clone:
+
+```bash
+git clone https://github.com/devsvarun/llmlab-frontend.git
+cd llmlab-frontend
+```
+
+2. Install:
+
+```bash
+npm install
+```
+
+3. Create `.env.local`:
+
+```
+NEXT_PUBLIC_API_URL=https://llm-backend-xez7.onrender.com
+```
+
+4. Run locally:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://127.0.0.1:3000` (or `http://localhost:3000`) in browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Project Structure (high level)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+/app                      # Next.js app routes
+/components               # Reusable UI components (LeftPanel, RightPanel, Skeleton)
+/lib                      # helpers (api client, markdown rendering)
+/styles                   # global styles (tailwind)
+/public                   # static assets
+```
 
-## Learn More
+### Key pages / components
 
-To learn more about Next.js, take a look at the following resources:
+- `MainConsole` — primary UI: prompt input, sliders, generate button, export/import
+- `SkeletonRightPanel` — full-size skeleton while generating
+- `ResponseCard` — renders a single response (markdown-safe)
+- `ComparisonTable` — shows metrics per response
+- `ImportButton` — import JSON experiments
+- `api-client` — small fetch wrapper using `NEXT_PUBLIC_API_URL`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Environment variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `NEXT_PUBLIC_API_URL` — base URL for backend (set to `https://llm-backend-xez7.onrender.com` for demo)
 
-## Deploy on Vercel
+### How the frontend talks to backend
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- POST `${API_URL}/run` with:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```json
+{
+  "prompt": "...",
+  "params": [
+    {"temperature": 0.7, "top_p": 0.9},
+    ...
+  ]
+}
+```
+
+- Backend returns an `experiment` object; frontend reads `experiment.results`.
+
+### Export / Import
+
+- Export: downloads `experiment_<timestamp>.json` containing prompt, parameters, results & metrics.
+- Import: file input reads JSON, validates shape, populates UI (prompt, sliders, responses).
+
+### Notes & Known limitations
+
+- This is a prototype for evaluation. For production:
+
+  - Add authentication and rate-limiting
+  - Replace local persistence with a DB
+  - Add proper error logging and monitoring
+
+### How to run tests (optional)
+
+- No automated tests required for challenge; add unit tests for helper functions as needed.
+
+### Contact / Maintainer
+
+Varun Sharma — repo owner ([https://github.com/devsvarun](https://github.com/devsvarun))
