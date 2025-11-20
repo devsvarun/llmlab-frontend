@@ -60,7 +60,7 @@ export default function MainConsole() {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/run", {
+      const res = await fetch(process.env.NEXT_PUBLIC_LLM_BACKEND + "/run", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
