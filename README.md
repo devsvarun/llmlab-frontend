@@ -79,7 +79,6 @@ Open `http://127.0.0.1:3000` (or `http://localhost:3000`) in browser.
   "prompt": "...",
   "params": [
     {"temperature": 0.7, "top_p": 0.9},
-    ...
   ]
 }
 ```
