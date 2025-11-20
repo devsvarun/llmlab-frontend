@@ -320,7 +320,7 @@ export default function MainConsole() {
           {isGenerating ? (
             <LoadingLayout />
           ) : (
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-6 min-w-0">
               {responses.length === 0 ? (
                 <Card className="border-2 border-dashed border-slate-200">
                   <CardContent className="flex flex-col items-center justify-center py-20 text-center">
@@ -370,7 +370,7 @@ export default function MainConsole() {
                               </ReactMarkdown>
                             </div>
                           </p>
-                          <div className="grid grid-cols-4 gap-3">
+                          <div className="grid sm:grid-cols-4 grid-cols-2 gap-3">
                             {Object.entries(getBestResponse().metrics).map(
                               ([key, value]) => (
                                 <div
@@ -384,7 +384,7 @@ export default function MainConsole() {
                                   >
                                     {(value * 100).toFixed(0)}%
                                   </div>
-                                  <div className="text-xs text-slate-500 capitalize">
+                                  <div className="text-wrap text-xs text-slate-500 capitalize">
                                     {key}
                                   </div>
                                 </div>
@@ -457,111 +457,223 @@ export default function MainConsole() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className="overflow-x-auto">
-                          <table className="w-full border-collapse">
-                            <thead>
-                              <tr className="border-b border-slate-200">
-                                <th className="text-left p-3 font-semibold text-sm">
-                                  #
-                                </th>
-                                <th className="text-left p-3 font-semibold text-sm">
-                                  Temperature
-                                </th>
-                                <th className="text-left p-3 font-semibold text-sm">
-                                  Top-P
-                                </th>
-                                <th className="text-left p-3 font-semibold text-sm">
-                                  Coherence
-                                </th>
-                                <th className="text-left p-3 font-semibold text-sm">
-                                  Relevance
-                                </th>
-                                <th className="text-left p-3 font-semibold text-sm">
-                                  Completeness
-                                </th>
-                                <th className="text-left p-3 font-semibold text-sm">
-                                  Diversity
-                                </th>
-                                <th className="text-left p-3 font-semibold text-sm">
-                                  Avg Score
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {responses.map((response, idx) => {
-                                const avgScore =
-                                  response.metrics.avg_score.toFixed(2);
-                                return (
-                                  <tr
-                                    key={response.id}
-                                    className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
-                                  >
-                                    <td className="p-3 font-medium">
-                                      {idx + 1}
-                                    </td>
-                                    <td className="p-3">
-                                      {response.temperature}
-                                    </td>
-                                    <td className="p-3">{response.topP}</td>
-                                    <td
-                                      className={`p-3 font-medium ${getMetricColor(
-                                        response.metrics.coherence
-                                      )}`}
-                                    >
-                                      {(
-                                        response.metrics.coherence * 100
-                                      ).toFixed(0)}
-                                      %
-                                    </td>
-                                    <td
-                                      className={`p-3 font-medium ${getMetricColor(
-                                        response.metrics.relevance
-                                      )}`}
-                                    >
-                                      {(
-                                        response.metrics.relevance * 100
-                                      ).toFixed(0)}
-                                      %
-                                    </td>
-                                    <td
-                                      className={`p-3 font-medium ${getMetricColor(
-                                        response.metrics.completeness
-                                      )}`}
-                                    >
-                                      {(
-                                        response.metrics.completeness * 100
-                                      ).toFixed(0)}
-                                      %
-                                    </td>
-                                    <td
-                                      className={`p-3 font-medium ${getMetricColor(
-                                        response.metrics.diversity
-                                      )}`}
-                                    >
-                                      {(
-                                        response.metrics.diversity * 100
-                                      ).toFixed(0)}
-                                      %
-                                    </td>
-                                    <td className="p-3">
-                                      <Badge
-                                        variant={
-                                          parseFloat(avgScore) >= 0.75
-                                            ? "default"
-                                            : "secondary"
-                                        }
-                                      >
-                                        {(parseFloat(avgScore) * 100).toFixed(
-                                          0
-                                        )}
-                                        %
-                                      </Badge>
-                                    </td>
+                        {/* Outer wrapper respects page padding and allows scrolling */}
+                        <div className="w-full" style={{ maxWidth: "100%" }}>
+                          <div
+                            className="overflow-x-auto w-full"
+                            style={{ maxWidth: "calc(100vw - 2rem)" }} // adjust 2rem if your container px differs
+                          >
+                            <div className="inline-block min-w-full align-middle">
+                              <table
+                                className="table-auto border-collapse"
+                                style={{ tableLayout: "fixed" }} // important to avoid automatic expansion
+                              >
+                                <thead>
+                                  <tr className="border-b border-slate-200">
+                                    <th className="text-left p-3 font-semibold text-sm">
+                                      #
+                                    </th>
+                                    <th className="text-left p-3 font-semibold text-sm">
+                                      Temperature
+                                    </th>
+                                    <th className="text-left p-3 font-semibold text-sm">
+                                      Top-P
+                                    </th>
+                                    <th className="text-left p-3 font-semibold text-sm">
+                                      Coherence
+                                    </th>
+                                    <th className="text-left p-3 font-semibold text-sm">
+                                      Relevance
+                                    </th>
+                                    <th className="text-left p-3 font-semibold text-sm">
+                                      Completeness
+                                    </th>
+                                    <th className="text-left p-3 font-semibold text-sm">
+                                      Diversity
+                                    </th>
+                                    <th className="text-left p-3 font-semibold text-sm">
+                                      Avg Score
+                                    </th>
                                   </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
+                                </thead>
+                                <tbody>
+                                  {responses.map((response, idx) => {
+                                    const avgScore =
+                                      response.metrics.avg_score.toFixed(2);
+                                    return (
+                                      <tr
+                                        key={response.id}
+                                        className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                                      >
+                                        <td className="p-3 font-medium align-top w-10">
+                                          {idx + 1}
+                                        </td>
+
+                                        <td className="p-3 align-top w-24 break-words">
+                                          {response.temperature}
+                                        </td>
+
+                                        <td className="p-3 align-top w-24 break-words">
+                                          {response.topP}
+                                        </td>
+
+                                        <td
+                                          className={`p-3 font-medium align-top ${getMetricColor(
+                                            response.metrics.coherence
+                                          )}`}
+                                        >
+                                          {(
+                                            response.metrics.coherence * 100
+                                          ).toFixed(0)}
+                                          %
+                                        </td>
+
+                                        <td
+                                          className={`p-3 font-medium align-top ${getMetricColor(
+                                            response.metrics.relevance
+                                          )}`}
+                                        >
+                                          {(
+                                            response.metrics.relevance * 100
+                                          ).toFixed(0)}
+                                          %
+                                        </td>
+
+                                        <td
+                                          className={`p-3 font-medium align-top ${getMetricColor(
+                                            response.metrics.completeness
+                                          )}`}
+                                        >
+                                          {(
+                                            response.metrics.completeness * 100
+                                          ).toFixed(0)}
+                                          %
+                                        </td>
+
+                                        <td
+                                          className={`p-3 font-medium align-top ${getMetricColor(
+                                            response.metrics.diversity
+                                          )}`}
+                                        >
+                                          {(
+                                            response.metrics.diversity * 100
+                                          ).toFixed(0)}
+                                          %
+                                        </td>
+
+                                        <td className="p-3 align-top w-24">
+                                          <Badge
+                                            variant={
+                                              parseFloat(avgScore) >= 0.75
+                                                ? "default"
+                                                : "secondary"
+                                            }
+                                          >
+                                            {(
+                                              parseFloat(avgScore) * 100
+                                            ).toFixed(0)}
+                                            %
+                                          </Badge>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Mobile fallback cards (optional but recommended for best UX) */}
+                        <div className="md:hidden mt-4 space-y-3">
+                          {responses.map((response, idx) => (
+                            <div
+                              key={response.id}
+                              className="border rounded-lg p-3 bg-white"
+                            >
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="font-medium">
+                                  Response #{idx + 1}
+                                </div>
+                                <div className="text-xs text-slate-500">
+                                  Temp: {response.temperature} • Top-P:{" "}
+                                  {response.topP}
+                                </div>
+                              </div>
+
+                              <div className="text-sm text-slate-700 mb-3 break-words overflow-hidden">
+                                <ReactMarkdown>
+                                  {response.response}
+                                </ReactMarkdown>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="p-2 bg-slate-50 rounded">
+                                  <div
+                                    className={`text-lg font-bold ${getMetricColor(
+                                      response.metrics.coherence
+                                    )}`}
+                                  >
+                                    {(response.metrics.coherence * 100).toFixed(
+                                      0
+                                    )}
+                                    %
+                                  </div>
+                                  <div className="text-xs text-slate-500">
+                                    Coherence
+                                  </div>
+                                </div>
+
+                                <div className="p-2 bg-slate-50 rounded">
+                                  <div
+                                    className={`text-lg font-bold ${getMetricColor(
+                                      response.metrics.relevance
+                                    )}`}
+                                  >
+                                    {(response.metrics.relevance * 100).toFixed(
+                                      0
+                                    )}
+                                    %
+                                  </div>
+                                  <div className="text-xs text-slate-500">
+                                    Relevance
+                                  </div>
+                                </div>
+
+                                <div className="p-2 bg-slate-50 rounded">
+                                  <div
+                                    className={`text-lg font-bold ${getMetricColor(
+                                      response.metrics.completeness
+                                    )}`}
+                                  >
+                                    {(
+                                      response.metrics.completeness * 100
+                                    ).toFixed(0)}
+                                    %
+                                  </div>
+                                  <div className="text-xs text-slate-500">
+                                    Completeness
+                                  </div>
+                                </div>
+
+                                <div className="p-2 bg-slate-50 rounded">
+                                  <div
+                                    className={`text-lg font-bold ${getMetricColor(
+                                      response.metrics.diversity
+                                    )}`}
+                                  >
+                                    {(response.metrics.diversity * 100).toFixed(
+                                      0
+                                    )}
+                                    %
+                                  </div>
+                                  <div className="text-xs text-slate-500">
+                                    Diversity
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </CardContent>
                     </Card>
